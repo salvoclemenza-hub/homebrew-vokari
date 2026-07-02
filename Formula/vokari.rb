@@ -28,6 +28,13 @@ class Vokari < Formula
   # too outdated" PRIMA di installare (anche se qui pip non compila nulla: sono tutte wheel).
   # Rimedio utente: `sudo softwareupdate --install "Command Line Tools for Xcode <ver>"` o
   # `sudo xcode-select --install`, poi riprovare. Documentato nel README (canale Homebrew).
+  #
+  # 🛑 macOS 26 TAHOE: questa formula (come ogni formula Python di brew) FALLISCE su Tahoe per un
+  # bug UPSTREAM, non nostro: il `python@3.12` di brew ha `pyexpat` linkato a un simbolo expat
+  # (`XML_SetAllocTrackerActivationThreshold`, header SDK 26.6) assente nella libexpat runtime di
+  # Tahoe → `pip` crasha all'import → install ko. Vale sia per il bottle sia per --build-from-source
+  # (verificato: il superenv di brew ignora i flag per forzare l'expat di brew). Si risolverà quando
+  # Homebrew ricostruirà i bottle Python per Tahoe. Fino ad allora, su Tahoe → canale DMG.
 
   def install
     venv = virtualenv_create(libexec, "python3.12")
