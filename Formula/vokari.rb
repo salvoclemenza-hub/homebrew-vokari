@@ -22,6 +22,12 @@ class Vokari < Formula
   # Installiamo quindi il pacchetto e le sue dipendenze via pip (da wheel) nel virtualenv.
   # È non idiomatico (brew audit lo segnala) ma è l'unica via realistica su un tap personale.
   # Il canale di distribuzione "senza dipendenze" resta il DMG/.app (PyInstaller).
+  #
+  # ⚠ CLT: essendo una formula "build-from-source" (nessuna bottle), `brew install` richiede i
+  # Command Line Tools AGGIORNATI. Su macOS con CLT datati brew esce con "Command Line Tools are
+  # too outdated" PRIMA di installare (anche se qui pip non compila nulla: sono tutte wheel).
+  # Rimedio utente: `sudo softwareupdate --install "Command Line Tools for Xcode <ver>"` o
+  # `sudo xcode-select --install`, poi riprovare. Documentato nel README (canale Homebrew).
 
   def install
     venv = virtualenv_create(libexec, "python3.12")
@@ -29,6 +35,17 @@ class Vokari < Formula
     system venv.root/"bin/pip", "install", "--verbose", buildpath
     bin.install_symlink libexec/"bin/vokari"
     bin.install_symlink libexec/"bin/vokari-app"
+  end
+
+  def caveats
+    <<~EOS
+      Homebrew installa VOKARI come COMANDO DA TERMINALE (non crea un'icona in /Applications).
+      Avvia l'interfaccia con:
+        vokari-app
+
+      Se preferisci un'app cliccabile in /Applications, usa il DMG:
+        https://github.com/salvoclemenza-hub/vokari/releases
+    EOS
   end
 
   test do
